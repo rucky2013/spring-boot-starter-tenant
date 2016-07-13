@@ -16,6 +16,8 @@ import com.cjoop.tenant.domain.MultiTenantInfo;
 @Repository("multiTenantInfoDao")
 public class MultiTenantInfoDaoImpl implements MultiTenantInfoDao {
 	
+	private static final String INSERT_MULTI_TENANT_INFO_SQL = "insert into multi_tenant_info(id,tenant_type,url,user_name,password,initialize) values(?,?,?,?,?,?)";
+	private static final String INSERT_ACCOUNT_TENANT_SQL = "insert into account_tenant(account,tenant) values(?,?)";
 	private static final String SELECT_FROM_MULTI_TENANT_INFO_WHERE_ID = "select * from multi_tenant_info where id=?";
 	private static final String SELECT_FROM_ACCOUNT_TENANT_WHERE_ACCOUNT = "select * from account_tenant where account=?";
 	
@@ -48,14 +50,14 @@ public class MultiTenantInfoDaoImpl implements MultiTenantInfoDao {
 
 	@Override
 	public int saveAccountTenant(AccountTenant accountTenant) {
-		return jdbcTemplate.update("insert into account_tenant(account,tenant) values(?,?)",accountTenant.getAccount(),accountTenant.getTenant());
+		return jdbcTemplate.update(INSERT_ACCOUNT_TENANT_SQL,accountTenant.getAccount(),accountTenant.getTenant());
 	}
 
 	@Override
 	public String saveMultiTenantInfo(MultiTenantInfo multiTenantInfo) {
 		String id = uuid();
 		multiTenantInfo.setId(id);
-		jdbcTemplate.update("insert into multi_tenant_info(id,tenant_type,url,user_name,password,initialize) values(?,?,?,?,?,?)",
+		jdbcTemplate.update(INSERT_MULTI_TENANT_INFO_SQL,
 				multiTenantInfo.getId(),multiTenantInfo.getTenantType(),multiTenantInfo.getUrl(),multiTenantInfo.getUserName(),
 				multiTenantInfo.getPassword(),multiTenantInfo.isInitialize());
 		return id;
